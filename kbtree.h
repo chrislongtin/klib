@@ -59,7 +59,7 @@ typedef struct {
 	} kbtree_##name##_t;
 
 #define __KB_INIT(name, key_t)											\
-	kbtree_##name##_t *kb_init_##name(int size)							\
+	static inline kbtree_##name##_t *kb_init_##name(int size)							\
 	{																	\
 		kbtree_##name##_t *b;											\
 		b = (kbtree_##name##_t*)calloc(1, sizeof(kbtree_##name##_t));	\
@@ -89,7 +89,9 @@ typedef struct {
 					if (__KB_PTR(b, x)[i]) {							\
 						if (top - stack == max) {						\
 							max <<= 1;									\
+							kbnode_t **tmp = stack;                     \
 							stack = (kbnode_t**)realloc(stack, max * sizeof(kbnode_t*)); \
+							if(!stack) { stack = tmp; continue; }       \
 							top = stack + (max>>1);						\
 						}												\
 						*top++ = __KB_PTR(b, x)[i];						\
